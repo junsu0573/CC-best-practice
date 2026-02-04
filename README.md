@@ -1,14 +1,22 @@
-# Claude Code Skills Best Practice
+# Claude Code Best Practice
 
-A standardized template and guidelines for creating high-quality Claude Code Skills.
+Standardized templates and guidelines for creating high-quality Claude Code **Skills** and **Agents**.
 
 ## What is this?
 
-This repository provides a **skill generator** (`skillgen-core`) that helps you create consistent, well-structured Claude Code Skills following best practices:
+This repository provides two generators to help you build consistent, well-structured Claude Code extensions:
 
-- **Progressive disclosure**: Keep SKILL.md short, link to reference files
+| Generator | Purpose | Output |
+|-----------|---------|--------|
+| `skillgen-core` | Create slash-command skills | `.claude/skills/<name>/` |
+| `agentgen-core` | Create sub-agents for delegation | `.claude/agents/<name>.md` |
+
+### Core Principles
+
+- **Progressive disclosure**: Keep main files short, link to references
 - **Clear descriptions**: Discovery-critical format (WHAT + WHEN + AVOID)
 - **Validation loops**: plan → validate → apply → verify
+- **Least privilege**: Minimal tool sets for agents
 - **Risk-aware guardrails**: Checklists and rollback plans for high-risk operations
 
 ## Quick Start
@@ -16,56 +24,84 @@ This repository provides a **skill generator** (`skillgen-core`) that helps you 
 ### 1. Copy to your project
 
 ```bash
+# Copy skill generator
 cp -r .claude/skills/skillgen-core /your-project/.claude/skills/
+
+# Copy agent generator
+cp -r .claude/skills/agentgen-core /your-project/.claude/skills/
 ```
 
 ### 2. Generate a new skill
 
-Tell Claude Code:
 ```
 "Create a new skill for <purpose> using skillgen-core"
 ```
 
-### 3. Structure created
+### 3. Generate a new agent
+
+```
+"Create a new agent for <role> using agentgen-core"
+```
+
+## Skill Structure
 
 ```
 .claude/skills/<skill-name>/
 ├── SKILL.md              # Main entry point (< 300 lines)
 ├── reference/            # Supporting docs (1-level deep)
-│   ├── naming.md
-│   └── validation.md
 ├── scripts/              # Optional deterministic validators
-└── eval/                 # Test cases (smoke, regression, high-risk)
+└── eval/                 # Test cases (>= 3)
 ```
 
-## Skill Structure Guidelines
-
-| Component | Purpose | Size Limit |
+| Component | Purpose | Constraint |
 |-----------|---------|------------|
 | `SKILL.md` | Quick start, workflow, guardrails | < 300 lines (max 500) |
 | `reference/*.md` | Detailed docs, examples | 1-level deep only |
 | `scripts/*` | Validators, automation | Deterministic output |
 | `eval/*.json` | Test cases | Minimum 3 cases |
 
-## Description Format
+## Agent Structure
 
-The `description` field in SKILL.md frontmatter is critical for discovery:
-
-```yaml
----
-name: my-skill
-description: Does <WHAT>. Use when <WHEN/TRIGGERS>. Avoid when <AVOID>.
----
+```
+.claude/agents/<agent-name>.md
 ```
 
-**Good**: `Extracts text from PDFs. Use when working with PDF files or document extraction.`
+| Section | Purpose |
+|---------|---------|
+| Frontmatter | name, description, model, tools, permissionMode |
+| Role | One-sentence job definition |
+| Scope | Explicit DO / DON'T lists |
+| Outputs | Required files and response sections |
+| Quality loop | format → lint → test → build |
+| Guardrails | Sensitive paths, escalation conditions |
 
-**Bad**: `Helps with documents.`
+### Agent Role Patterns
+
+| Role | Responsibility | Tools |
+|------|----------------|-------|
+| `planner` | Decompose tasks, risks, milestones | read-only |
+| `implementer` | Minimal code changes with tests | write, bash |
+| `reviewer` | Review diffs, conventions | read-only |
+| `tester` | Add/update tests | write, bash |
+| `release-operator` | Deploy/migrate/rollback | bash (strict) |
+| `docs-writer` | Update documentation | write only |
+
+## Description Format
+
+The `description` field is critical for discovery and delegation:
+
+```yaml
+description: Does <WHAT>. Use when <WHEN/TRIGGERS>. Avoid when <AVOID>.
+```
+
+**Good**: `Performs safe database migrations with validation gates. Use when migrating schemas or planning rollbacks.`
+
+**Bad**: `Helps with databases.`
 
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
-- Adding new skills
+- Adding new skills or agents
 - Improving existing templates
 - Proposing structural changes
 

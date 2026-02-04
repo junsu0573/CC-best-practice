@@ -1,12 +1,13 @@
 # Contributing
 
-Thank you for your interest in improving Claude Code Skills Best Practice!
+Thank you for your interest in improving Claude Code Best Practice!
 
 ## How to Contribute
 
 ### 1. Improve existing templates
 
-- Edit files in `.claude/skills/skillgen-core/`
+- **Skills**: Edit files in `.claude/skills/skillgen-core/`
+- **Agents**: Edit files in `.claude/skills/agentgen-core/`
 - Follow the existing structure and naming conventions
 - Keep changes focused and minimal
 
@@ -26,7 +27,7 @@ For significant changes:
 
 ## Guidelines
 
-### File Structure
+### Skill Structure
 
 ```
 .claude/skills/<skill-name>/
@@ -36,13 +37,31 @@ For significant changes:
 └── eval/*.json           # Required: >= 3 test cases
 ```
 
-### SKILL.md Rules
-
+**SKILL.md Rules:**
 - Keep under 300 lines (hard limit: 500)
 - Include: quick start, workflow, output contract, guardrails
 - Use 1-level deep references only
 
-### Description Format
+### Agent Structure
+
+```
+.claude/agents/<agent-name>.md
+```
+
+**Agent file must include:**
+- Frontmatter: name, description, model, tools, permissionMode
+- Role: one-sentence job definition
+- Scope: explicit DO / DON'T lists
+- Outputs: required files and response sections
+- Quality loop: verification steps
+- Guardrails: sensitive paths, escalation conditions
+
+**Agent principles:**
+- Least privilege: minimal tool sets
+- Single responsibility: one role per agent
+- Clear boundaries: explicit DO / DON'T
+
+### Description Format (Skills & Agents)
 
 ```
 Does <WHAT>. Use when <WHEN/TRIGGERS>. Avoid when <AVOID>.
